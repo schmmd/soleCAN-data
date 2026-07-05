@@ -1,0 +1,172 @@
+Solectrac e25G — Kelly KLS7218M e-hydraulic pump controller
+Current configuration
+===========================================================
+
+Source of "Yours": a live read of the controller's flash, 2026-07-04 17:59:49
+  (kelly/scan.txt, via kelly/solectrac-kelly-dump-config.py). Ground truth —
+  all 91 calibration parameters, not a screenshot reconstruction.
+Source of "Vendor": the Compage KLS7218MC/NC parameter sheet
+  ("COMPAGE DOCUMENT KLS7218MC & KLS718NC  FORMAT.pdf", pp. 8-11) — a related
+  but not identical controller, so treat it as a reference, not ground truth.
+  "-" means the sheet has no comparable value.
+
+Fields where your controller differs from the vendor sheet are marked
+<-- DIFFERS. There are three real configuration differences:
+  - Startup H-Pedel is OFF (vendor: on)
+  - MidSpeed Forward/Reverse Speed are 65/65 (vendor: 55/55)
+and one block that differs by design:
+  - the 10-entry Hall commutation table (0..300 deg + Forw/Rev A Rise/Fall) is
+    a motor-identification result, learned per motor and hall wiring, so it is
+    expected to differ from a generic sheet — not a misconfiguration.
+
+Every value that the earlier screenshot reconstruction had observed matches
+this live dump exactly; this file supersedes that reconstruction.
+
+
+IDENTITY (read-only)
+--------------------
+  Parameter              Yours       Vendor        Note
+  Module Name            KLS7218M    KLS7218MC     name field differs; may be a
+                                                   different controller variant
+  User Name              bzbb        bzbb
+  Serial Number          20236777    20249997      unit-specific (sheet is a
+                                                   different unit)
+  Software Version       02060001    2060001       same (version word 0x0206=518)
+  Code Version           010101      -             0x11 reply; distinct from the
+                                                   flash software-version word
+
+
+GENERAL / SWITCHES
+------------------
+  Parameter              Yours       Vendor        Note
+  Startup H-Pedel        0           1             <-- DIFFERS
+  Brake H-Pedel          0           0
+  NTL H-Pedel            0           0
+  Joystick               0           0
+  Three Gears Switch     0           0
+  Boost                  0           0
+  Foot Switch            0           0
+  SW Level               1           1             read-only
+  0,HIM;1,KIM            1           1             read-only
+  Cruise                 0           0
+  Anti-theft             0           0
+  Anti slip              0           0
+  Change Dir             0           0
+
+
+PROTECTION
+----------
+  Parameter              Yours       Vendor        Note
+  Controller Volt        72          -             read-only (rated voltage)
+  Low Volt               24          24
+  Over Volt              85          85
+  Hall Galvan Rate       360         360           read-only
+  PhaseCurr Max AD       300         300           read-only
+  Motor_Current%         50          50
+  Batt_Current%          50          50
+  High Temp Cut C        110         110           degC
+  High Temp Resume       90          90            degC
+  High Temp Str C        100         100           degC (derate start)
+  High Temp Week %       0           0
+
+
+THROTTLE
+--------
+  Parameter              Yours       Vendor        Note
+  TPS Low                0           0
+  TPS High               95          95
+  TPS Type               1           1             1 = 0-5 V
+  TPS Dead Low           20          20
+  TPS Dead High          80          80
+  TPS Forw MAP           30          30
+  TPS Rev MAP            20          20
+
+
+BRAKING
+-------
+  Parameter              Yours       Vendor        Note
+  Brake SW Level         1           1             read-only
+  Brake Type             0           0             0 = none
+  Brake Dead Low         20          20
+  Brake Dead High        80          80
+  BRK_AD Brk %#          0           0
+  Anti-theft Curr#       15          15
+  Brk_Speed Limit        0           -
+  RLS_TPS Brk Per%       0           0             throttle-release braking
+  NTL Brk Per%           0           0
+  BRK_SW Brk Per%        10          10
+  Change Dir Brk%        0           0
+  Compensation Per%      20          20
+  IVT BRK Max            50          50            RPM
+  IVT BRK Min            50          50            RPM
+
+
+SPEED
+-----
+  Parameter              Yours       Vendor        Note
+  Max Output Fre         1000        1000
+  Max Speed              2800        2800          RPM (High mode)
+  Max Forw Speed%        85          85
+  Max Rev Speed%         85          85
+  MidSpeed Forw Speed    65          55            <-- DIFFERS
+  MidSpeed Rev Speed     65          55            <-- DIFFERS
+  LowSpeed Forw Speed    30          30
+  LowSpeed Rev Speed     20          20
+  Three Speed            1           1             1 = two-speed mode
+  PWM frequency          16          16            16 kHz
+  Accel Time             150         150           15.0 s (0.1 s units)
+  Accel Release Time     5           5             0.5 s
+  Brake Time             5           5             0.5 s
+  Brake Release Time     1           1             0.1 s
+
+
+PID TUNING
+----------
+  Parameter              Yours       Vendor        Note
+  IQ Kp                  500         500
+  IQ Ki                  10          10
+  ID Kp                  1500        1500
+  ID Ki                  30          30
+  ID Err                 32767       -
+  Torque Speed Kp        2000        2000
+  Torque Speed Ki        60          60
+  Speed Err Limit        1000        1000
+
+
+ADVANCED (high-speed field-weakening)
+-------------------------------------
+  Parameter              Yours       Vendor        Note
+  HS_ACQR_Kp             2000        -
+  HS_ACQR_Ki             60          -
+  HS_ACDR_Kp             5000        -
+  HS_ACDR_Ki             100         -
+
+
+MOTOR
+-----
+  Parameter              Yours       Vendor        Note
+  Identify Angle         85          85            motor-ID flag (85 = idle)
+  Motor Nominal Curr     80          80            A
+  Motor Poles            10          10            pole count x 2
+  Speed Sensor Type      2           2             2 = Hall
+  Resolver Poles         2           2
+  Min Excitation Curr    0           0             (1 on KLS7218NC, 0 on MC)
+  Motor Temp Sensor      1           1
+  Line Hall Zero         508         508
+  Line Hall amplitude    410         410
+  Line Hall High Err     972         972
+  Line Hall Low Err      50          50
+  Swap Motor Phase       0           0
+  Resolver init angle    8129        8129
+
+  Hall commutation table (motor-identification result — expected to differ)
+  0 deg Hall             4           6             <-- DIFFERS
+  60 deg Hall            5           2             <-- DIFFERS
+  120 deg Hall           1           3             <-- DIFFERS
+  180 deg Hall           3           1             <-- DIFFERS
+  240 deg Hall           2           5             <-- DIFFERS
+  300 deg Hall           6           4             <-- DIFFERS
+  Forw A Rise Hall       6           5             <-- DIFFERS
+  Forw A Fall Hall       1           2             <-- DIFFERS
+  Rev A Rise Hall        5           6             <-- DIFFERS
+  Rev A Fall Hall        2           1             <-- DIFFERS
