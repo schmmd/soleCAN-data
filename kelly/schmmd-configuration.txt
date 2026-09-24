@@ -3,7 +3,7 @@ Current configuration
 ===========================================================
 
 Source of "Yours": a live read of the controller's flash, 2026-07-04 17:59:49
-  (kelly/scan.txt, via kelly/solectrac-kelly-dump-config.py). Ground truth —
+  (data/kelly/kelly-config-20260704-175949.txt, via kelly/solectrac-kelly-dump-config.py). Ground truth —
   all 91 calibration parameters, not a screenshot reconstruction.
 Source of "Vendor": the Compage KLS7218MC/NC parameter sheet
   ("COMPAGE DOCUMENT KLS7218MC & KLS718NC  FORMAT.pdf", pp. 8-11) — a related
